@@ -1,85 +1,176 @@
 ---
 name: agents-md-generator
-description: [TODO: Complete and informative explanation of what the skill does and when to use it. Include WHEN to use this skill - specific scenarios, file types, or tasks that trigger it.]
+description: Generate or update a project-specific AGENTS.md for non-AI-native repositories. Use when the user asks to create an AGENTS.md, make a repository AI-agent ready, document agent working rules, onboard Codex or other coding agents to an existing project, or scan a project and produce agent instructions.
 ---
 
-# Agents Md Generator
+# AGENTS.md Generator
 
-## Overview
+Create a concise `AGENTS.md` that tells coding agents how to work safely in the current repository.
 
-[TODO: 1-2 sentences explaining what this skill enables]
+The output is an internal engineering guide, not a consulting report.
 
-## Structuring This Skill
+## Core Rules
 
-[TODO: Choose the structure that best fits this skill's purpose. Common patterns:
+- Scan before asking questions.
+- Separate confirmed facts, inferred details, and missing context.
+- Ask the project owner targeted questions before generating the final file.
+- Do not write guessed commands or conventions as facts.
+- Keep the generated `AGENTS.md` short, direct, and repository-specific.
+- Preserve any existing `AGENTS.md` unless the user confirms replacement.
 
-**1. Workflow-Based** (best for sequential processes)
-- Works well when there are clear step-by-step procedures
-- Example: DOCX skill with "Workflow Decision Tree" -> "Reading" -> "Creating" -> "Editing"
-- Structure: ## Overview -> ## Workflow Decision Tree -> ## Step 1 -> ## Step 2...
+## Workflow
 
-**2. Task-Based** (best for tool collections)
-- Works well when the skill offers different operations/capabilities
-- Example: PDF skill with "Quick Start" -> "Merge PDFs" -> "Split PDFs" -> "Extract Text"
-- Structure: ## Overview -> ## Quick Start -> ## Task Category 1 -> ## Task Category 2...
+### 1. Inspect Existing Agent Instructions
 
-**3. Reference/Guidelines** (best for standards or specifications)
-- Works well for brand guidelines, coding standards, or requirements
-- Example: Brand styling with "Brand Guidelines" -> "Colors" -> "Typography" -> "Features"
-- Structure: ## Overview -> ## Guidelines -> ## Specifications -> ## Usage...
+Check whether these files exist:
 
-**4. Capabilities-Based** (best for integrated systems)
-- Works well when the skill provides multiple interrelated features
-- Example: Product Management with "Core Capabilities" -> numbered capability list
-- Structure: ## Overview -> ## Core Capabilities -> ### 1. Feature -> ### 2. Feature...
+```powershell
+rg --files -g 'AGENTS.md' -g 'CLAUDE.md' -g 'GEMINI.md'
+```
 
-Patterns can be mixed and matched as needed. Most skills combine patterns (e.g., start with task-based, add workflow for complex operations).
+If `AGENTS.md` exists, read it before doing anything else. Ask whether to update it, replace it, or create `AGENTS.generated.md`. Do not overwrite it without confirmation.
 
-Delete this entire "Structuring This Skill" section when done - it's just guidance.]
+### 2. Scan Repository Evidence
 
-## [TODO: Replace with the first main section based on chosen structure]
+Use `rg --files` first. Read files that exist from this list:
 
-[TODO: Add content here. See examples in existing skills:
-- Code samples for technical skills
-- Decision trees for complex workflows
-- Concrete examples with realistic user requests
-- References to scripts/templates/references as needed]
+- `README*`
+- `package.json`
+- `pnpm-lock.yaml`
+- `yarn.lock`
+- `package-lock.json`
+- `pyproject.toml`
+- `requirements*.txt`
+- `Pipfile`
+- `poetry.lock`
+- `pom.xml`
+- `build.gradle`
+- `settings.gradle`
+- `go.mod`
+- `Cargo.toml`
+- `Makefile`
+- `Dockerfile`
+- `docker-compose*.yml`
+- `.github/workflows/*`
+- `.gitlab-ci.yml`
+- `Jenkinsfile`
+- linter, formatter, and test configuration files
 
-## Resources (optional)
+Inspect top-level and second-level directory structure. Skip large generated or dependency folders such as `.git`, `node_modules`, `dist`, `build`, `target`, `.venv`, and `vendor`.
 
-Create only the resource directories this skill actually needs. Delete this section if no resources are required.
+### 3. Present Scan Summary
 
-### scripts/
-Executable code (Python/Bash/etc.) that can be run directly to perform specific operations.
+Before writing `AGENTS.md`, present a compact summary:
 
-**Examples from other skills:**
-- PDF skill: `fill_fillable_fields.py`, `extract_form_field_info.py` - utilities for PDF manipulation
-- DOCX skill: `document.py`, `utilities.py` - Python modules for document processing
+```markdown
+## Confirmed
+- Facts directly found in repository files.
 
-**Appropriate for:** Python scripts, shell scripts, or any executable code that performs automation, data processing, or specific operations.
+## Inferred
+- Likely facts based on file names, dependencies, or structure.
 
-**Note:** Scripts may be executed without loading into context, but can still be read by Codex for patching or environment adjustments.
+## Missing
+- Information that could not be determined safely.
 
-### references/
-Documentation and reference material intended to be loaded into context to inform Codex's process and thinking.
+## Questions
+- Questions for the project owner.
+```
 
-**Examples from other skills:**
-- Product management: `communication.md`, `context_building.md` - detailed workflow guides
-- BigQuery: API reference documentation and query examples
-- Finance: Schema documentation, company policies
+Keep `Inferred` conservative. If a command is not found in project files, list it as missing instead of guessing.
 
-**Appropriate for:** In-depth documentation, API references, database schemas, comprehensive guides, or any detailed information that Codex should reference while working.
+### 4. Ask Owner Questions
 
-### assets/
-Files not intended to be loaded into context, but rather used within the output Codex produces.
+Ask 3-8 questions. Prefer fewer questions when repository evidence is strong.
 
-**Examples from other skills:**
-- Brand styling: PowerPoint template files (.pptx), logo files
-- Frontend builder: HTML/React boilerplate project directories
-- Typography: Font files (.ttf, .woff2)
+Prioritize:
 
-**Appropriate for:** Templates, boilerplate code, document templates, images, icons, fonts, or any files meant to be copied or used in the final output.
+- Actual install, run, test, lint, format, build, and deploy commands.
+- Whether tests and CI are trusted.
+- High-risk modules, data flows, or workflows.
+- Directories agents should avoid or treat carefully.
+- Generated files and migration rules.
+- Coding conventions not encoded in tooling.
+- What "done" means for typical changes.
 
----
+Do not ask all questions at once if the answer will be hard to provide. Group related command questions together when that reduces back-and-forth.
 
-**Not every skill requires all three types of resources.**
+### 5. Generate AGENTS.md
+
+Generate this structure:
+
+```markdown
+# AGENTS.md
+
+## Project Snapshot
+## Tech Stack
+## Commands
+## Repository Map
+## Development Rules
+## Testing and Verification
+## Agent Workflow
+## Risk Areas
+## Do Not
+## Missing Context
+## Codex Notes
+```
+
+Write in short imperative prose.
+
+Use this section guidance:
+
+- `Project Snapshot`: State what the project does using confirmed files or owner input.
+- `Tech Stack`: List languages, frameworks, runtimes, package managers, and major tools.
+- `Commands`: Include only commands found in project files or confirmed by the owner.
+- `Repository Map`: Describe important directories and boundaries.
+- `Development Rules`: Capture project-specific style, architecture, dependency, and review rules.
+- `Testing and Verification`: State exactly what agents must run before claiming completion.
+- `Agent Workflow`: Tell agents to read context, make focused edits, preserve conventions, verify, and report changes.
+- `Risk Areas`: List modules, files, workflows, or data paths needing extra care.
+- `Do Not`: List hard constraints and forbidden actions.
+- `Missing Context`: Keep unresolved questions that affect safe agent work.
+- `Codex Notes`: Add Codex-specific advice while keeping the rest portable.
+
+Use these default `Codex Notes` unless the project needs stricter guidance:
+
+```markdown
+## Codex Notes
+
+- Use `rg` or `rg --files` before slower search commands.
+- Read nearby code before editing.
+- Use the repository's documented commands for verification.
+- Keep changes scoped to the requested task.
+- Do not reset, discard, or overwrite user changes unless explicitly asked.
+- For large or risky changes, write a short plan before editing.
+```
+
+### 6. Self-Review Before Finishing
+
+Check the generated file for:
+
+- Inferred details written as confirmed facts.
+- Commands not found in project files or owner answers.
+- Generic advice that could apply to any repository.
+- Missing testing or verification instructions.
+- Missing risk areas.
+- Contradictions between repository evidence and owner answers.
+- Placeholder text such as `TODO`, `TBD`, or vague filler.
+
+Fix issues before presenting the result.
+
+## Edge Cases
+
+- If the repository is too large, sample top-level structure and the most important config files first.
+- If no metadata files exist, generate a minimal file with a prominent `Missing Context` section.
+- If the owner cannot answer a question, keep it in `Missing Context`.
+- If commands are discovered but may be unsafe or expensive, ask before running them.
+- If the user only asks for a template, provide the structure without scanning or writing repository-specific facts.
+
+## Final Response
+
+Summarize:
+
+- The path written.
+- Whether an existing `AGENTS.md` was updated or a new file was created.
+- Which facts came from owner answers if that matters.
+- Any unresolved missing context.
+- Verification performed, such as self-review or file inspection.
