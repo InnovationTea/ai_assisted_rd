@@ -1,0 +1,4 @@
+interface:
+  display_name: "AGENTS.md Generator"
+  short_description: "Generate project-specific AGENTS.md files."
+  default_prompt: "Use $agents-md-generator to scan this project and generate an AGENTS.md."
