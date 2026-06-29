@@ -9,7 +9,7 @@ Onboard coding agents to a project by scanning the repository, interviewing the 
 
 Default to senior-developer knowledge distillation. The normal output is `AGENTS.md` plus `agents.d/`; add platform-specific files only for platforms the owner uses, and generate or propose a project-specific skill when repeated workflows should trigger automatically.
 
-This skill can also distribute bundled project skills listed in `bundled-skills.json`. Default bundled-skill installation means project-local installation into the target repository, not personal/global skill directories.
+This skill can also distribute bundled project skills listed in `bundled-skills.json`. A bundled skill may be configured as a default project-local install candidate, which means proactively offer to install it into the target repository and run it only after user approval.
 
 The output files are internal engineering guides and automation runbooks, not consulting reports.
 
@@ -28,8 +28,8 @@ The output files are internal engineering guides and automation runbooks, not co
 - Distill tacit knowledge into executable instructions, recipes, playbooks, and handoff criteria, not background explanation.
 - Preserve existing instruction files unless the user confirms replacement.
 - Do not run install, build, test, migration, deploy, or service-start commands unless the user confirms they are safe in the current environment.
-- Do not install bundled project skills into a user's personal Codex/Claude/OpenCode directories unless the user explicitly asks for personal/global installation.
-- Confirm before running bundled-skill installers that modify the target project, because project-local installers may write hooks, config files, commands, plugins, and onboarding files.
+- Install bundled skills according to `bundled-skills.json`: proactively offer configured default project-local installs, but get user approval before running installers that modify the target project.
+- Do not install bundled project skills into personal/global Codex/Claude/OpenCode directories unless the user explicitly asks for personal/global installation.
 - Do not store secrets, personal machine paths, private account identifiers, one-off incident chatter, or temporary knowledge in onboarding assets.
 
 ## Progressive Disclosure

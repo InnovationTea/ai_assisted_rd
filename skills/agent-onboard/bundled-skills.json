@@ -29,9 +29,10 @@
         "verification": "node .opencode/skills/ai-code-tracker/scripts/install.js --check"
       },
       "safety": {
-        "project_local_default": true,
+        "offer_project_local_install_by_default": true,
+        "require_user_approval_before_run": true,
         "personal_directory_install_requires_confirmation": true,
-        "run_install_requires_confirmation": true
+        "personal_directory_install_requires_explicit_request": true
       }
     }
   ]

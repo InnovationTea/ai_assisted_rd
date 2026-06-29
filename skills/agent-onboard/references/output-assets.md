@@ -210,7 +210,7 @@ For each bundled skill, document:
 - Verification step after install.
 - Safety level: autonomous, ask first, or never install automatically.
 
-Default installation may be project-local when `bundled-skills.json` marks `project_local_default` true. Confirm before running any installer that modifies the target project. Do not auto-install bundled skills into personal skill directories unless the user explicitly asks for personal/global installation.
+When `bundled-skills.json` marks `offer_project_local_install_by_default` true, proactively offer to run the project-local installer during onboarding. Run it only after user approval because it may modify the target project. Do not install bundled skills into personal/global skill directories unless the user explicitly asks for personal/global installation.
 
 If the platform supports direct repository-local skill loading, document that path instead of copying files.
 

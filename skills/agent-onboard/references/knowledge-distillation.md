@@ -114,13 +114,13 @@ When a bundled skill comes from an external repository, pin its version in `bund
 
 Ask the owner:
 
-- Should this skill be installed into the target project by default, kept repository-local as optional, or installed into a user's personal skill directory only on explicit request?
+- Should this skill be proactively offered as a default project-local install, kept repository-local as optional, or installed into a user's personal skill directory only on explicit request?
 - Which agent platforms should see it: Codex, Claude Code, OpenCode, or another tool?
 - What exact install command or copy path should a future agent use?
 - How can the agent verify installation or availability?
 - What inputs, credentials, or project context must exist before the skill is safe to use?
 
-Default bundled-skill installation is project-local. Still confirm before running installers that modify the target project. If installation writes outside the repository or into personal/global skill directories, record it as explicit-confirmation-only.
+When `bundled-skills.json` sets `offer_project_local_install_by_default`, proactively ask the user whether to run the project-local installer during onboarding. Always get approval before running an installer that modifies the target project. If installation writes outside the repository or into personal/global skill directories, require the user to explicitly request personal/global installation.
 
 ## Automation Checkpoints
 

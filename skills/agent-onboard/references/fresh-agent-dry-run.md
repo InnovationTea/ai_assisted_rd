@@ -47,7 +47,7 @@ Do not claim the project is automation-ready unless:
 - Known blockers have owner-approved recovery or escalation.
 - Required secrets, services, accounts, VPNs, paid systems, or production access are documented as requirements without exposing sensitive values.
 - Approved tools and scripts have triggers, inputs, outputs, failure recovery, and safety levels.
-- Bundled project skills have version pins, source paths, trigger conditions, install targets, written-file lists, verification steps, and ask-first rules for target-project or personal-directory writes.
+- Bundled project skills have version pins, source paths, trigger conditions, install targets, written-file lists, verification steps, default-offer rules, and approval rules for target-project or personal-directory writes.
 - Risk areas and forbidden actions are explicit.
 - Human review handoff says what evidence the agent must provide.
 
