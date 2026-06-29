@@ -9,6 +9,7 @@ Use this reference before generating new onboarding files.
 - agents.d
 - CLAUDE.md
 - Project-Specific Skill
+- Bundled Direct Skill Installation
 - Bundled Package Installation
 
 ## Asset Selection
@@ -20,6 +21,8 @@ Generate `agents.d/` by default for knowledge distillation. Skip it only when th
 Generate platform-specific files only for platforms the owner uses or explicitly requests, such as `CLAUDE.md`, `GEMINI.md`, or `.opencode/`. If platforms are unknown, ask before generating platform-specific files.
 
 Generate or propose a project-specific skill when repeated workflows should trigger automatically, when the project will be onboarded repeatedly, or when distilled knowledge should be reused across future agents and checkouts.
+
+If `bundled-skills.json` exists in this skill, inspect it before proposing bundled direct skills. Use it as the source of truth for direct skill source paths, supported platforms, target paths, overlays, default-offer rules, verification, and safety policy.
 
 If `bundled-packages.json` exists in this skill, inspect it before proposing bundled packages or platform skills. Use it as the source of truth for vendored package versions, source commits, package paths, nested platform skill paths, install commands, and safety policy. Resolve `<package-dir>` from the configured package path before showing or running an installer.
 
@@ -150,13 +153,15 @@ The project skill should:
 - Reserve official skill resource directories when useful: `scripts/` for executable helpers, `references/` for load-on-demand docs, and `assets/` for templates or resources used in outputs.
 - Use an additional `packages/` directory for versioned bundled packages that may contain multiple platform skills, scripts, commands, plugins, hooks, or assets.
 - Use an additional `skills/` directory only for direct repository-local skills whose folder is itself the skill root.
+- Use an additional `bundled-skills/` directory only for copy-only direct skills shipped inside the onboarding skill. Keep `packages/` for installer-backed or version-pinned distribution units.
+- Track direct bundled skills in `bundled-skills.json`; enumerate source paths, supported platforms, target paths, overlays, default-offer rules, verification, and safety policy.
 - Track external bundled package versions in `bundled-packages.json`; pin tags to immutable commits and enumerate nested platform skills.
 - If the owner explicitly wants reserved empty directories, create them only in the generated project skill package and use the repository's existing placeholder convention, such as `.gitkeep`, when empty directories must be tracked.
 - Include only durable setup, run, build, test, debug, change, review, and handoff procedures.
 - Avoid secrets, personal machine paths, one-off troubleshooting logs, and broad AI behavior advice.
 - Include `agents/openai.yaml` when creating a Codex-discoverable skill.
 
-Use this structure when the project skill needs reusable resources or bundled packages:
+Use this structure when the project skill needs reusable resources, bundled direct skills, or bundled packages:
 
 ```text
 <project>-onboard/
@@ -166,6 +171,14 @@ Use this structure when the project skill needs reusable resources or bundled pa
   scripts/
   references/
   assets/
+  bundled-skills/
+    <skill>/
+      skill/
+        SKILL.md
+      overlays/
+        codex/
+          agents/
+            openai.yaml
   packages/
     <package>/
       README.md
@@ -194,8 +207,27 @@ description: Use when working in <project>, especially for setup, running, build
 ## Verification
 ## Handoff
 ## Escalate To Human
+## Bundled Direct Skills
 ## Bundled Packages
 ```
+
+## Bundled Direct Skill Installation
+
+When generating a project-specific skill that contains copy-only bundled skills, include installation guidance either in the project skill's `SKILL.md` or in `references/bundled-skills.md`.
+
+For each bundled direct skill, document:
+
+- Skill name, version, purpose, source path, and supported platforms.
+- Default install mode, whether to offer by default, and whether user approval is required.
+- Platform target paths, overlay paths, and detection evidence for Codex, Claude Code, OpenCode, or other supported tools.
+- Exact copy behavior: copy the `source_path` directory into each selected platform target path, then apply the platform overlay if one is configured.
+- Existing target behavior: stop and ask the user whether to skip, replace, or manually merge when the target path already exists.
+- Verification step after install for each selected platform.
+- Safety level: autonomous, ask first, or never install automatically.
+
+Install direct bundled skills only for platforms the owner explicitly uses or repository evidence detects. Detection evidence includes owner answers and platform-specific project files such as `.codex`, `skills/`, `AGENTS.md`, `.claude`, `CLAUDE.md`, `.opencode`, or `.opencode.yaml`. Do not create platform directories for unknown or unused platforms by default.
+
+When `bundled-skills.json` marks `default_install.offer_by_default`, proactively offer to copy the direct skill into the selected project-local platform paths during onboarding. Run the copy only after user approval because it modifies the target project. Do not install bundled direct skills into personal/global skill directories unless the user explicitly asks for personal/global installation.
 
 ## Bundled Package Installation
 

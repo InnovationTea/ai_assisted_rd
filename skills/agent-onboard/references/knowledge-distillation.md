@@ -8,7 +8,7 @@ Use this reference while interviewing the knowledgeable project owner and conver
 - Knowledge Map
 - Source Labels
 - Tooling And Skill Inventory
-- Bundled Packages And Platform Skills
+- Bundled Direct Skills, Packages, And Platform Skills
 - Automation Checkpoints
 - High-Value Question Areas
 - Distillation Style
@@ -84,7 +84,30 @@ For each approved skill, script, or internal tool, capture exact name/path, trig
 
 Ask targeted questions when scripts or skills are implied but undocumented.
 
-## Bundled Packages And Platform Skills
+## Bundled Direct Skills, Packages, And Platform Skills
+
+Capture bundled direct skills when a repeated workflow can be distributed as a simple skill directory without a package installer. Treat the direct skill as copy-only project-local content; install it only for platforms the owner explicitly uses or repository evidence detects.
+
+Use this structure:
+
+```markdown
+## Bundled Direct Skills
+- Skill name:
+- Version:
+- Source path:
+- Purpose:
+- Default install mode:
+- Offer by default:
+- Supported platforms:
+- Target paths:
+- Platform detection evidence:
+- Overlay paths:
+- Verification:
+- Existing target conflict rule:
+- Safety level:
+```
+
+Ask the owner which agent platforms should receive the direct skill: Codex, Claude Code, OpenCode, or another tool. If the owner does not request a platform and repository evidence does not detect it, do not install that platform's copy by default.
 
 Capture repository-local or project-skill-local packages when a repeated workflow ships reusable platform-specific skills, scripts, commands, plugins, hooks, or assets. Treat the outer package as the versioned distribution unit; treat each nested platform skill as the agent-facing triggerable unit.
 
@@ -116,7 +139,7 @@ Use this structure:
 - Do not use when:
 ```
 
-Treat `packages/<package-name>/` as a candidate bundled package when it has durable project value and can be installed or referenced by future agents. Treat `skills/<skill-name>/SKILL.md`, `packages/**/.claude/skills/**/SKILL.md`, and `packages/**/.opencode/skills/**/SKILL.md` as platform skill entries, not necessarily as package roots. Do not mark an exploratory draft, private experiment, or incomplete package or skill as installable.
+Treat `bundled-skills/<skill-name>/skill/SKILL.md` or `skills/<skill-name>/SKILL.md` as a candidate bundled direct skill when it has durable project value and can be copied into future projects. Treat `packages/<package-name>/` as a candidate bundled package when it has durable project value and can be installed or referenced by future agents. Treat `packages/**/.claude/skills/**/SKILL.md` and `packages/**/.opencode/skills/**/SKILL.md` as platform skill entries, not necessarily as package roots. Do not mark an exploratory draft, private experiment, or incomplete package or skill as installable.
 
 When a bundled package comes from an external repository, pin its version in `bundled-packages.json` with source repo, ref or tag, immutable commit, package path, platform skill source paths, supported platforms, install command, verification command, and safety policy.
 
@@ -129,7 +152,7 @@ Ask the owner:
 - How can the agent verify installation or availability per platform?
 - What inputs, credentials, or project context must exist before the package or platform skill is safe to use?
 
-When `bundled-packages.json` sets `default_install.offer_by_default`, proactively ask the user whether to run the project-local installer during onboarding. Always get approval before running an installer that modifies the target project. If installation writes outside the repository or into personal/global skill directories, require the user to explicitly request personal/global installation.
+When `bundled-skills.json` or `bundled-packages.json` sets `default_install.offer_by_default`, proactively ask the user whether to install it during onboarding. Always get approval before copying files or running an installer that modifies the target project. If installation writes outside the repository or into personal/global skill directories, require the user to explicitly request personal/global installation.
 
 ## Automation Checkpoints
 

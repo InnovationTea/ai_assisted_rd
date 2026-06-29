@@ -1,0 +1,57 @@
+{
+  "bundled_skills": [
+    {
+      "name": "gitpush",
+      "version": "local",
+      "kind": "multi-platform-direct-skill",
+      "source_path": "bundled-skills/gitpush/skill",
+      "purpose": "Commit local Git changes and push them to the remote repository, with optional branch squash.",
+      "default_install": {
+        "mode": "project-local",
+        "offer_by_default": true,
+        "requires_user_approval": true,
+        "install_only_for_detected_or_requested_platforms": true
+      },
+      "platforms": [
+        {
+          "platform": "codex",
+          "target_path": "skills/gitpush",
+          "overlay_path": "bundled-skills/gitpush/overlays/codex",
+          "detection_paths": [
+            ".codex",
+            "skills",
+            "AGENTS.md"
+          ],
+          "verification": "SKILL.md exists at skills/gitpush/SKILL.md"
+        },
+        {
+          "platform": "claude",
+          "target_path": ".claude/skills/gitpush",
+          "detection_paths": [
+            ".claude",
+            "CLAUDE.md"
+          ],
+          "verification": "SKILL.md exists at .claude/skills/gitpush/SKILL.md"
+        },
+        {
+          "platform": "opencode",
+          "target_path": ".opencode/skills/gitpush",
+          "detection_paths": [
+            ".opencode",
+            ".opencode.yaml"
+          ],
+          "verification": "SKILL.md exists at .opencode/skills/gitpush/SKILL.md"
+        }
+      ],
+      "writes": [
+        "skills/gitpush",
+        ".claude/skills/gitpush",
+        ".opencode/skills/gitpush"
+      ],
+      "safety": {
+        "personal_directory_install_requires_explicit_request": true,
+        "existing_target_requires_user_decision": true
+      }
+    }
+  ]
+}
