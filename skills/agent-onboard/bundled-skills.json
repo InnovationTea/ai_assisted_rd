@@ -1,19 +1,22 @@
 {
-  "bundled_skills": [
+  "bundled_packages": [
     {
       "name": "git-code-tracker",
       "version": "v1.0.1",
+      "kind": "multi-platform-skill-package",
       "source": {
         "type": "git",
         "repo": "https://github.com/yooocen/git-code-tracker.git",
         "ref": "refs/tags/v1.0.1",
         "commit": "e1cc62d9fb3f82e2f13ca276be94ce5fcdaf6aa9"
       },
-      "path": "skills/git-code-tracker",
-      "default_install_mode": "project-local",
-      "platforms": ["opencode", "claude"],
-      "install": {
-        "command": "node <agent-onboard-skill-dir>/skills/git-code-tracker/install-to-project.js <target-project>",
+      "path": "packages/git-code-tracker",
+      "readme": "packages/git-code-tracker/README.md",
+      "default_install": {
+        "mode": "project-local",
+        "offer_by_default": true,
+        "requires_user_approval": true,
+        "command": "node <package-dir>/install-to-project.js <target-project>",
         "writes": [
           ".opencode/skills/ai-code-tracker",
           ".claude/skills/ai-code-tracker",
@@ -25,13 +28,25 @@
           ".git/hooks",
           ".gitignore",
           "AGENTS.md"
-        ],
-        "verification": "node .opencode/skills/ai-code-tracker/scripts/install.js --check"
+        ]
       },
+      "platform_skills": [
+        {
+          "platform": "opencode",
+          "name": "ai-code-tracker",
+          "source_path": ".opencode/skills/ai-code-tracker",
+          "target_path": ".opencode/skills/ai-code-tracker",
+          "verification": "node .opencode/skills/ai-code-tracker/scripts/install.js --check"
+        },
+        {
+          "platform": "claude",
+          "name": "ai-code-tracker",
+          "source_path": ".claude/skills/ai-code-tracker",
+          "target_path": ".claude/skills/ai-code-tracker",
+          "verification": "node .claude/skills/ai-code-tracker/scripts/install.js --check"
+        }
+      ],
       "safety": {
-        "offer_project_local_install_by_default": true,
-        "require_user_approval_before_run": true,
-        "personal_directory_install_requires_confirmation": true,
         "personal_directory_install_requires_explicit_request": true
       }
     }

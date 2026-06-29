@@ -2,7 +2,7 @@
 
 Use this reference when the user adds reusable project knowledge after initial onboarding.
 
-Trigger phrases include "remember this", "add this to AGENTS.md", "update agents.d", "we found another debug step", "this script should be used for X", "install this project skill", "add this bundled skill", or any request to preserve newly discovered setup/build/test/debug/tooling knowledge.
+Trigger phrases include "remember this", "add this to AGENTS.md", "update agents.d", "we found another debug step", "this script should be used for X", "install this project skill", "add this bundled package", "add this platform skill", or any request to preserve newly discovered setup/build/test/debug/tooling knowledge.
 
 ## Update Flow
 
@@ -22,14 +22,14 @@ Place knowledge according to where a future agent will look first:
 - Entry rules, high-level workflow, and links: `AGENTS.md`.
 - Fresh checkout, prerequisites, environment files, local services, seed data: `agents.d/bootstrap.md`.
 - Approved skills, scripts, CLIs, code generators, validators, safety levels: `agents.d/tooling.md`.
-- Bundled project skills, versions, installation targets, trigger conditions, written files, and verification: `agents.d/tooling.md`, `bundled-skills.json`, and the project-specific skill's `skills/` directory or bundled-skill reference.
+- Bundled packages, platform skills, versions, installation targets, trigger conditions, written files, and verification: `agents.d/tooling.md`, `bundled-skills.json`, and the project-specific skill's `packages/` directory or bundled-package reference.
 - Daily run/build/test/lint commands, fast checks, slow checks: `agents.d/development-loop.md`.
 - Entry points, module boundaries, data flow, generated code, files that change together: `agents.d/architecture-map.md`.
 - Failure symptoms, diagnostics, logs, recovery steps: `agents.d/debug-playbook.md`.
 - Common tasks, likely files, required tests, review notes: `agents.d/change-recipes.md`.
 - Handoff evidence, reviewer expectations, "done" criteria: `agents.d/review-handoff.md`.
 - Dangerous workflows, invariants, migrations, security/cost/data risks, escalation triggers: `agents.d/risk-areas.md`.
-- Repeated triggerable workflows: the project-specific skill or a bundled sub skill under its `skills/` directory.
+- Repeated triggerable workflows: the project-specific skill, a direct repository-local skill under `skills/`, or a platform skill inside a bundled package.
 - Platform-specific behavior: `CLAUDE.md`, `GEMINI.md`, `.opencode/`, or other platform file.
 
 If a piece of knowledge fits multiple files, keep the detailed rule in one file and link to it from the entry point. Avoid duplication.
@@ -54,7 +54,7 @@ Convert:
 - "I usually fix this by..." into a symptom -> diagnosis -> recovery playbook.
 - "Always be careful with..." into a risk invariant or escalation rule.
 - "Use this script for..." into a tooling entry with trigger, command, inputs, output, success signal, and safety level.
-- "Use/install this skill for..." into a bundled skill entry with version, source path, trigger, install target, written files, verification, and safety level.
+- "Use/install this package/skill for..." into a bundled package entry plus platform skill entries with version, package path, platform source paths, trigger, install target, written files, verification, and safety level.
 - "This failed because..." into a debug entry only if the failure is likely reusable.
 - "Before review I check..." into review-handoff evidence or senior-review heuristics.
 
@@ -79,5 +79,5 @@ Never silently pick a rule when the conflict could affect setup, tests, data, se
 - Remove stale duplicated guidance only when needed to avoid contradiction.
 - Update `AGENTS.md` index links when a new `agents.d/` file is added.
 - Update the project-specific skill only when the knowledge affects triggerable workflows or required read order.
-- Add or update bundled sub skills only when the workflow needs independent trigger metadata; otherwise document it as an approved tool or recipe.
-- Update `bundled-skills.json` whenever a vendored bundled skill is added, removed, upgraded, or re-pinned.
+- Add or update bundled packages only when reusable workflows need distributed files or nested platform skills; otherwise document the workflow as an approved tool or recipe.
+- Update `bundled-skills.json` whenever a vendored package or nested platform skill is added, removed, upgraded, or re-pinned.

@@ -13,8 +13,8 @@ The dry run is a reasoning and file-inspection pass unless the user has confirme
 Run the slices relevant to the change:
 
 - **Bootstrap**: Can a fresh agent install prerequisites, configure required files, start local services, and reach a known-ready signal?
-- **Tool selection**: Can it choose approved skills, bundled project skills, scripts, CLIs, generators, or validators without improvising?
-- **Bundled skill installation**: Can it discover required sub skills, read version pins from `bundled-skills.json`, install or reference them safely, and verify availability?
+- **Tool selection**: Can it choose approved skills, bundled packages, platform skills, scripts, CLIs, generators, or validators without improvising?
+- **Bundled package installation**: Can it discover required packages and nested platform skills, read version pins from `bundled-skills.json`, follow the package README or installer, install or reference them safely, and verify availability?
 - **Development loop**: Can it run, build, test, lint, and format with expected success signals?
 - **Debugging**: For common failures, does it know which logs or commands to inspect and what recovery step is allowed?
 - **Change recipe**: For a representative task, does it know likely files, boundaries, coupled edits, and required checks?
@@ -31,7 +31,7 @@ Ask these questions as the fresh agent:
 - What exact command or action comes next?
 - What working directory and inputs are required?
 - What output proves success?
-- If a bundled skill is required, where is it located, what version is pinned, and how is it installed or referenced?
+- If a bundled package or platform skill is required, where is the package located, what version is pinned, which nested platform skill applies, and how is it installed or referenced?
 - If the command fails with a known symptom, what is the next diagnostic step?
 - Is the action autonomous, ask-first, or forbidden?
 - What context must be reported to the human reviewer?
@@ -47,7 +47,7 @@ Do not claim the project is automation-ready unless:
 - Known blockers have owner-approved recovery or escalation.
 - Required secrets, services, accounts, VPNs, paid systems, or production access are documented as requirements without exposing sensitive values.
 - Approved tools and scripts have triggers, inputs, outputs, failure recovery, and safety levels.
-- Bundled project skills have version pins, source paths, trigger conditions, install targets, written-file lists, verification steps, default-offer rules, and approval rules for target-project or personal-directory writes.
+- Bundled packages and nested platform skills have version pins, package paths, platform source paths, trigger conditions, install targets, written-file lists, verification steps, default-offer rules, and approval rules for target-project or personal-directory writes.
 - Risk areas and forbidden actions are explicit.
 - Human review handoff says what evidence the agent must provide.
 
@@ -66,7 +66,7 @@ Before finishing, scan for:
 - Platform-specific content in portable `AGENTS.md`.
 - `CLAUDE.md` longer than 120 lines without imports.
 - Project skill duplicating detailed `AGENTS.md` or `agents.d/` content instead of routing to it.
-- Bundled sub skills without version pins, install/verification instructions, written-file disclosure, or with duplicated guidance that should stay in `AGENTS.md` or `agents.d/`.
+- Bundled packages or nested platform skills without version pins, install/verification instructions, written-file disclosure, or with duplicated guidance that should stay in `AGENTS.md` or `agents.d/`.
 - Secrets, private identifiers, personal paths, or one-off incident chatter.
 - Placeholder text such as `TODO`, `TBD`, or vague filler.
 

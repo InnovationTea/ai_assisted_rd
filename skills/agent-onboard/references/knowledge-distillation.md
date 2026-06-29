@@ -8,7 +8,7 @@ Use this reference while interviewing the knowledgeable project owner and conver
 - Knowledge Map
 - Source Labels
 - Tooling And Skill Inventory
-- Bundled Project Skills
+- Bundled Packages And Platform Skills
 - Automation Checkpoints
 - High-Value Question Areas
 - Distillation Style
@@ -34,7 +34,7 @@ Cover these categories unless the project scope makes one irrelevant:
 
 - **Golden path**: The shortest reliable path from fresh checkout to a useful development loop.
 - **Bootstrap blockers**: Local tools, versions, credentials, services, data, network access, generated files, and machine-specific assumptions.
-- **Tooling inventory**: Approved skills, bundled project skills, scripts, CLIs, code generators, validators, and internal tools agents should use instead of improvising.
+- **Tooling inventory**: Approved skills, bundled packages, platform skills, scripts, CLIs, code generators, validators, and internal tools agents should use instead of improvising.
 - **Architecture map**: Module boundaries, key entry points, data flow, ownership boundaries, and where not to make cross-cutting changes.
 - **Change recipes**: Where to edit for common tasks, which files must change together, and which checks prove the change worked.
 - **Debug playbooks**: Common symptoms, logs to inspect, diagnostic commands, likely causes, and recovery steps.
@@ -84,43 +84,52 @@ For each approved skill, script, or internal tool, capture exact name/path, trig
 
 Ask targeted questions when scripts or skills are implied but undocumented.
 
-## Bundled Project Skills
+## Bundled Packages And Platform Skills
 
-Capture repository-local or project-skill-local sub skills when a repeated workflow deserves its own triggerable skill.
+Capture repository-local or project-skill-local packages when a repeated workflow ships reusable platform-specific skills, scripts, commands, plugins, hooks, or assets. Treat the outer package as the versioned distribution unit; treat each nested platform skill as the agent-facing triggerable unit.
 
 Use this structure:
 
 ```markdown
-## Bundled Project Skills
-- Skill name:
+## Bundled Packages
+- Package name:
 - Version:
 - Source repo/ref/commit:
-- Source path:
+- Package path:
+- README or install guide:
 - Purpose:
+- Default install mode:
+- Offer by default:
+- Files or directories the installer writes:
+- Safety level:
+
+## Platform Skills
+- Platform:
+- Skill name:
+- Source path inside package:
+- Target path:
 - Use when:
 - Required inputs:
 - Must read before use:
-- Install target:
 - Install command or manual copy step:
-- Files or directories the installer writes:
 - Verification:
 - Do not use when:
-- Safety level:
 ```
 
-Treat `skills/<skill-name>/SKILL.md` as a candidate bundled skill only when it has durable project value and can be installed or referenced by future agents. Do not mark an exploratory draft, private experiment, or incomplete skill as installable.
+Treat `packages/<package-name>/` as a candidate bundled package when it has durable project value and can be installed or referenced by future agents. Treat `skills/<skill-name>/SKILL.md`, `packages/**/.claude/skills/**/SKILL.md`, and `packages/**/.opencode/skills/**/SKILL.md` as platform skill entries, not necessarily as package roots. Do not mark an exploratory draft, private experiment, or incomplete package or skill as installable.
 
-When a bundled skill comes from an external repository, pin its version in `bundled-skills.json` with source repo, ref or tag, immutable commit, bundled path, supported platforms, install command, verification command, and safety policy.
+When a bundled package comes from an external repository, pin its version in `bundled-skills.json` with source repo, ref or tag, immutable commit, package path, platform skill source paths, supported platforms, install command, verification command, and safety policy.
 
 Ask the owner:
 
-- Should this skill be proactively offered as a default project-local install, kept repository-local as optional, or installed into a user's personal skill directory only on explicit request?
+- Should this package be proactively offered as a default project-local install, kept repository-local as optional, or installed into a user's personal skill directory only on explicit request?
 - Which agent platforms should see it: Codex, Claude Code, OpenCode, or another tool?
-- What exact install command or copy path should a future agent use?
-- How can the agent verify installation or availability?
-- What inputs, credentials, or project context must exist before the skill is safe to use?
+- What package README, install script, or manual copy path should a future agent use?
+- Which nested platform skills are actually installed for each platform?
+- How can the agent verify installation or availability per platform?
+- What inputs, credentials, or project context must exist before the package or platform skill is safe to use?
 
-When `bundled-skills.json` sets `offer_project_local_install_by_default`, proactively ask the user whether to run the project-local installer during onboarding. Always get approval before running an installer that modifies the target project. If installation writes outside the repository or into personal/global skill directories, require the user to explicitly request personal/global installation.
+When `bundled-skills.json` sets `default_install.offer_by_default`, proactively ask the user whether to run the project-local installer during onboarding. Always get approval before running an installer that modifies the target project. If installation writes outside the repository or into personal/global skill directories, require the user to explicitly request personal/global installation.
 
 ## Automation Checkpoints
 
@@ -159,7 +168,7 @@ Prioritize:
 - Runtime versions, package manager versions, local service startup, seed data, secrets, and offline/online requirements.
 - Success signals for install, run, build, and test.
 - Known failure modes and owner-approved recovery.
-- Approved existing skills, bundled project skills, and project scripts, including when to use them, how to install them, and when not to use them.
+- Approved existing skills, bundled packages, platform skills, and project scripts, including when to use them, how to install them, and when not to use them.
 - Whether tests and CI are trusted.
 - High-risk modules, data flows, generated files, and migration rules.
 - Directories agents should avoid or treat carefully.
