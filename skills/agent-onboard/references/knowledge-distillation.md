@@ -8,6 +8,7 @@ Use this reference while interviewing the knowledgeable project owner and conver
 - Knowledge Map
 - Source Labels
 - Tooling And Skill Inventory
+- Bundled Project Skills
 - Automation Checkpoints
 - High-Value Question Areas
 - Distillation Style
@@ -33,7 +34,7 @@ Cover these categories unless the project scope makes one irrelevant:
 
 - **Golden path**: The shortest reliable path from fresh checkout to a useful development loop.
 - **Bootstrap blockers**: Local tools, versions, credentials, services, data, network access, generated files, and machine-specific assumptions.
-- **Tooling inventory**: Approved skills, scripts, CLIs, code generators, validators, and internal tools agents should use instead of improvising.
+- **Tooling inventory**: Approved skills, bundled project skills, scripts, CLIs, code generators, validators, and internal tools agents should use instead of improvising.
 - **Architecture map**: Module boundaries, key entry points, data flow, ownership boundaries, and where not to make cross-cutting changes.
 - **Change recipes**: Where to edit for common tasks, which files must change together, and which checks prove the change worked.
 - **Debug playbooks**: Common symptoms, logs to inspect, diagnostic commands, likely causes, and recovery steps.
@@ -83,6 +84,44 @@ For each approved skill, script, or internal tool, capture exact name/path, trig
 
 Ask targeted questions when scripts or skills are implied but undocumented.
 
+## Bundled Project Skills
+
+Capture repository-local or project-skill-local sub skills when a repeated workflow deserves its own triggerable skill.
+
+Use this structure:
+
+```markdown
+## Bundled Project Skills
+- Skill name:
+- Version:
+- Source repo/ref/commit:
+- Source path:
+- Purpose:
+- Use when:
+- Required inputs:
+- Must read before use:
+- Install target:
+- Install command or manual copy step:
+- Files or directories the installer writes:
+- Verification:
+- Do not use when:
+- Safety level:
+```
+
+Treat `skills/<skill-name>/SKILL.md` as a candidate bundled skill only when it has durable project value and can be installed or referenced by future agents. Do not mark an exploratory draft, private experiment, or incomplete skill as installable.
+
+When a bundled skill comes from an external repository, pin its version in `bundled-skills.json` with source repo, ref or tag, immutable commit, bundled path, supported platforms, install command, verification command, and safety policy.
+
+Ask the owner:
+
+- Should this skill be installed into the target project by default, kept repository-local as optional, or installed into a user's personal skill directory only on explicit request?
+- Which agent platforms should see it: Codex, Claude Code, OpenCode, or another tool?
+- What exact install command or copy path should a future agent use?
+- How can the agent verify installation or availability?
+- What inputs, credentials, or project context must exist before the skill is safe to use?
+
+Default bundled-skill installation is project-local. Still confirm before running installers that modify the target project. If installation writes outside the repository or into personal/global skill directories, record it as explicit-confirmation-only.
+
 ## Automation Checkpoints
 
 Build this table before generating files:
@@ -120,7 +159,7 @@ Prioritize:
 - Runtime versions, package manager versions, local service startup, seed data, secrets, and offline/online requirements.
 - Success signals for install, run, build, and test.
 - Known failure modes and owner-approved recovery.
-- Approved existing skills and project scripts, including when to use them and when not to.
+- Approved existing skills, bundled project skills, and project scripts, including when to use them, how to install them, and when not to use them.
 - Whether tests and CI are trusted.
 - High-risk modules, data flows, generated files, and migration rules.
 - Directories agents should avoid or treat carefully.

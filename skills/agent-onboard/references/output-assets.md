@@ -9,6 +9,7 @@ Use this reference before generating new onboarding files.
 - agents.d
 - CLAUDE.md
 - Project-Specific Skill
+- Bundled Skill Installation
 
 ## Asset Selection
 
@@ -19,6 +20,8 @@ Generate `agents.d/` by default for knowledge distillation. Skip it only when th
 Generate platform-specific files only for platforms the owner uses or explicitly requests, such as `CLAUDE.md`, `GEMINI.md`, or `.opencode/`. If platforms are unknown, ask before generating platform-specific files.
 
 Generate or propose a project-specific skill when repeated workflows should trigger automatically, when the project will be onboarded repeatedly, or when distilled knowledge should be reused across future agents and checkouts.
+
+If `bundled-skills.json` exists in this skill, inspect it before proposing bundled skills. Use it as the source of truth for vendored skill versions, source commits, install commands, and safety policy. Resolve `<agent-onboard-skill-dir>` to the current filesystem path of this skill before showing or running an installer.
 
 ## AGENTS.md
 
@@ -144,11 +147,32 @@ The project skill should:
 - Live in the location the user wants for installation or sharing. If unspecified, propose repository-local `skills/<project>-onboard/`.
 - Include concise trigger metadata for working in this exact project.
 - Point agents to `AGENTS.md` and `agents.d/` for stable rules instead of duplicating all content.
+- Reserve official skill resource directories when useful: `scripts/` for executable helpers, `references/` for load-on-demand docs, and `assets/` for templates or resources used in outputs.
+- Use an additional `skills/` directory only for bundled sub skills that should be distributed with the project onboarding package.
+- Track external bundled skill versions in `bundled-skills.json`; pin tags to immutable commits.
+- If the owner explicitly wants reserved empty directories, create them only in the generated project skill package and use the repository's existing placeholder convention, such as `.gitkeep`, when empty directories must be tracked.
 - Include only durable setup, run, build, test, debug, change, review, and handoff procedures.
 - Avoid secrets, personal machine paths, one-off troubleshooting logs, and broad AI behavior advice.
 - Include `agents/openai.yaml` when creating a Codex-discoverable skill.
 
-Use this structure:
+Use this structure when the project skill needs reusable resources or bundled sub skills:
+
+```text
+<project>-onboard/
+  SKILL.md
+  agents/
+    openai.yaml
+  scripts/
+  references/
+  assets/
+  skills/
+    <sub-skill>/
+      SKILL.md
+```
+
+Use `scripts/`, `references/`, and `assets/` according to the official skill resource convention. Treat `skills/` as an additional distribution directory, not as a required official resource directory.
+
+Use this `SKILL.md` structure:
 
 ```markdown
 ---
@@ -167,4 +191,27 @@ description: Use when working in <project>, especially for setup, running, build
 ## Verification
 ## Handoff
 ## Escalate To Human
+## Bundled Skills
 ```
+
+## Bundled Skill Installation
+
+When generating a project-specific skill that contains sub skills, include installation guidance either in the project skill's `SKILL.md` or in `references/bundled-skills.md`.
+
+For each bundled skill, document:
+
+- Skill name and source path.
+- Version, source repository, tag/ref, and pinned commit when externally sourced.
+- What workflow should trigger it.
+- Whether it is required, recommended, or optional.
+- Target platform and install destination.
+- Exact installation step or manual copy instruction.
+- Files or directories the installer may write.
+- Verification step after install.
+- Safety level: autonomous, ask first, or never install automatically.
+
+Default installation may be project-local when `bundled-skills.json` marks `project_local_default` true. Confirm before running any installer that modifies the target project. Do not auto-install bundled skills into personal skill directories unless the user explicitly asks for personal/global installation.
+
+If the platform supports direct repository-local skill loading, document that path instead of copying files.
+
+The bundled `git-code-tracker` entry is pinned to `v1.0.1` / `e1cc62d9fb3f82e2f13ca276be94ce5fcdaf6aa9`. Its installer is project-local and may write `.opencode/skills/ai-code-tracker`, `.claude/skills/ai-code-tracker`, commands, plugins, hooks, `.ai-tracking`, `.gitignore`, and `AGENTS.md`.

@@ -1,6 +1,6 @@
 ---
 name: agent-onboard
-description: Use when the user asks to onboard coding agents to a project, make a repository AI-agent ready, generate or update AGENTS.md/agents.d/CLAUDE.md, prepare Codex/Claude/OpenCode to work in an existing codebase, capture project setup/build/test/debug/tooling knowledge from a knowledgeable developer, or add newly discovered project knowledge to reusable agent onboarding assets.
+description: Use when the user asks to onboard coding agents to a project, make a repository AI-agent ready, generate or update AGENTS.md/agents.d/CLAUDE.md, prepare Codex/Claude/OpenCode to work in an existing codebase, capture project setup/build/test/debug/tooling knowledge from a knowledgeable developer, install or document bundled project skills, or add newly discovered project knowledge to reusable agent onboarding assets.
 ---
 
 # Agent Onboard
@@ -8,6 +8,8 @@ description: Use when the user asks to onboard coding agents to a project, make 
 Onboard coding agents to a project by scanning the repository, interviewing the knowledgeable project owner, and distilling project-specific knowledge into agent-usable instructions.
 
 Default to senior-developer knowledge distillation. The normal output is `AGENTS.md` plus `agents.d/`; add platform-specific files only for platforms the owner uses, and generate or propose a project-specific skill when repeated workflows should trigger automatically.
+
+This skill can also distribute bundled project skills listed in `bundled-skills.json`. Default bundled-skill installation means project-local installation into the target repository, not personal/global skill directories.
 
 The output files are internal engineering guides and automation runbooks, not consulting reports.
 
@@ -21,18 +23,21 @@ The output files are internal engineering guides and automation runbooks, not co
 - Preserve the source of knowledge: repository evidence, owner-confirmed fact, operational preference, risk judgment, observed run result, or unknown.
 - Capture automation blockers as explicit breakpoints with owner-confirmed fixes or escalation rules.
 - Capture approved skills, project scripts, and internal tools with trigger conditions, required inputs, success signals, and safety levels.
+- Capture bundled project skills with version, source, install target, trigger conditions, required inputs, verification, and safety rules.
 - Update existing onboarding assets when reusable project knowledge appears during later agent work.
 - Distill tacit knowledge into executable instructions, recipes, playbooks, and handoff criteria, not background explanation.
 - Preserve existing instruction files unless the user confirms replacement.
 - Do not run install, build, test, migration, deploy, or service-start commands unless the user confirms they are safe in the current environment.
+- Do not install bundled project skills into a user's personal Codex/Claude/OpenCode directories unless the user explicitly asks for personal/global installation.
+- Confirm before running bundled-skill installers that modify the target project, because project-local installers may write hooks, config files, commands, plugins, and onboarding files.
 - Do not store secrets, personal machine paths, private account identifiers, one-off incident chatter, or temporary knowledge in onboarding assets.
 
 ## Progressive Disclosure
 
 Read only the reference file needed for the current phase:
 
-- For interview categories, source labels, tooling inventory, and automation breakpoint capture, read `references/knowledge-distillation.md`.
-- For `AGENTS.md`, `agents.d/`, `CLAUDE.md`, and project-specific skill structures, read `references/output-assets.md` before generating files.
+- For interview categories, source labels, tooling inventory, bundled project skills, bundled-skill versions, and automation breakpoint capture, read `references/knowledge-distillation.md`.
+- For `AGENTS.md`, `agents.d/`, `CLAUDE.md`, project-specific skill structures, resource directories, bundled skills, and default project-local installation, read `references/output-assets.md` before generating files.
 - When the user adds knowledge after initial onboarding or asks to update existing instructions, read `references/update-existing-assets.md`.
 - Before claiming the project is agent-ready or automation-ready, read `references/fresh-agent-dry-run.md`.
 
@@ -46,7 +51,7 @@ If the user invoked the skill with a project description or arguments, use that 
 
 > Briefly describe what this project does, which areas or workflows you know best, and what a new agent or developer should be able to do after this onboarding.
 
-Ask early which workflows should become agent-runnable, which parts usually require a familiar human, which skills/scripts/tools agents should use, which agent platforms matter, and whether to generate a reusable project skill now or only propose its shape.
+Ask early which workflows should become agent-runnable, which parts usually require a familiar human, which skills/scripts/tools agents should use, whether any project-bundled skills should be created or installed, which agent platforms matter, and whether to generate a reusable project skill now or only propose its shape.
 
 ### 1. Inspect Existing Agent Instructions
 
@@ -72,6 +77,7 @@ Read existing files from this evidence set when present:
 - CI/CD: `.github/workflows/*`, `.gitlab-ci.yml`, `Jenkinsfile`.
 - Agent/tool config: `.opencode.yaml`, `.opencode/`, `.claude/settings.json`.
 - Automation folders: `scripts/**`, `tools/**`, `bin/**`, `tasks/**`.
+- Project-bundled skills: `bundled-skills.json`, `skills/*/SKILL.md`, `skills/**/agents/openai.yaml`, and directly related `scripts/`, `references/`, or `assets/` under those skill folders.
 - Linter, formatter, type-checker, and test configuration.
 
 Use the project description and knowledge-holder role from Step 0 to decide which files need deeper reading.
@@ -109,6 +115,7 @@ Normal scope:
 - `agents.d/` as the default home for split runbooks, maps, recipes, playbooks, risks, and handoff rules.
 - Platform-specific files such as `CLAUDE.md`, `GEMINI.md`, or `.opencode/` only when the owner uses or requests those agents.
 - A project-specific skill recommendation, and the skill itself when repeated workflows should be shared across future agents or checkouts.
+- Bundled project skills under the project skill's `skills/` directory when reusable sub-workflows should be distributed with the onboarding package.
 
 Use a lightweight `AGENTS.md`-only flow only when the user explicitly asks for a small instruction file or template and does not want a knowledge-distillation session.
 

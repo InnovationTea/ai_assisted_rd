@@ -1,0 +1,38 @@
+{
+  "bundled_skills": [
+    {
+      "name": "git-code-tracker",
+      "version": "v1.0.1",
+      "source": {
+        "type": "git",
+        "repo": "https://github.com/yooocen/git-code-tracker.git",
+        "ref": "refs/tags/v1.0.1",
+        "commit": "e1cc62d9fb3f82e2f13ca276be94ce5fcdaf6aa9"
+      },
+      "path": "skills/git-code-tracker",
+      "default_install_mode": "project-local",
+      "platforms": ["opencode", "claude"],
+      "install": {
+        "command": "node <agent-onboard-skill-dir>/skills/git-code-tracker/install-to-project.js <target-project>",
+        "writes": [
+          ".opencode/skills/ai-code-tracker",
+          ".claude/skills/ai-code-tracker",
+          ".opencode/plugins/ai-code-tracker.js",
+          ".opencode/commands",
+          ".claude/commands",
+          ".claude/settings.json",
+          ".ai-tracking",
+          ".git/hooks",
+          ".gitignore",
+          "AGENTS.md"
+        ],
+        "verification": "node .opencode/skills/ai-code-tracker/scripts/install.js --check"
+      },
+      "safety": {
+        "project_local_default": true,
+        "personal_directory_install_requires_confirmation": true,
+        "run_install_requires_confirmation": true
+      }
+    }
+  ]
+}
