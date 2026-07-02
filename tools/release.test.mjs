@@ -7,22 +7,23 @@ import test from "node:test";
 import { releaseSkill } from "./release.mjs";
 
 test("releaseSkill creates an expanded skill directory and zip package", async () => {
-  const rootDir = await mkdtemp(path.join(tmpdir(), "agent-onboard-release-"));
+  const rootDir = await mkdtemp(path.join(tmpdir(), "agent-runbook-distiller-release-"));
 
   try {
     const skillDir = path.join(rootDir, "skill");
     await mkdir(path.join(skillDir, "references"), { recursive: true });
-    await writeFile(path.join(skillDir, "SKILL.md"), "---\nname: agent-onboard\n---\n");
+    await writeFile(path.join(skillDir, "SKILL.md"), "---\nname: agent-runbook-distiller\n---\n");
     await writeFile(path.join(skillDir, "references", "guide.md"), "# Guide\n");
 
     const result = await releaseSkill({
       rootDir,
       skillDir: path.join(rootDir, "skill"),
       outputDir: path.join(rootDir, "outputs"),
-      packageName: "agent-onboard",
     });
 
-    assert.equal(await readFile(path.join(result.expandedDir, "SKILL.md"), "utf8"), "---\nname: agent-onboard\n---\n");
+    assert.equal(path.basename(result.expandedDir), "agent-runbook-distiller");
+    assert.equal(path.basename(result.zipPath), "agent-runbook-distiller.zip");
+    assert.equal(await readFile(path.join(result.expandedDir, "SKILL.md"), "utf8"), "---\nname: agent-runbook-distiller\n---\n");
     assert.equal(await readFile(path.join(result.expandedDir, "references", "guide.md"), "utf8"), "# Guide\n");
 
     const zipStat = await stat(result.zipPath);

@@ -1,11 +1,11 @@
 ---
-name: agent-onboard
-description: Use when the user asks to onboard coding agents to a project, make a repository AI-agent ready, generate or update AGENTS.md/agents.d/CLAUDE.md, prepare Codex/Claude/OpenCode to work in an existing codebase, capture project setup/build/test/debug/tooling knowledge from a knowledgeable developer, install or document bundled packages or platform skills, or add newly discovered project knowledge to reusable agent onboarding assets.
+name: agent-runbook-distiller
+description: Use when the user asks to distill repository evidence and owner knowledge into agent runbooks, make a repository AI-agent ready, generate or update AGENTS.md/agents.d/CLAUDE.md, prepare Codex/Claude/OpenCode to work in an existing codebase, identify common or private framework conventions during repository scans, capture project setup/build/test/debug/tooling knowledge from a knowledgeable developer, define human review checkpoints for agent self-directed development loops, install or document bundled packages or platform skills, or add newly discovered project knowledge to reusable agent guidance assets.
 ---
 
-# Agent Onboard
+# Agent Runbook Distiller
 
-Onboard coding agents to a project by scanning the repository, interviewing the knowledgeable project owner, and distilling project-specific knowledge into agent-usable instructions.
+Distill repository evidence and owner knowledge into executable agent runbooks, review checkpoints, and project-local guidance that let coding agents develop in safe self-directed loops.
 
 Default to senior-developer knowledge distillation. The normal output is `AGENTS.md` plus `agents.d/`; add platform-specific files only for platforms the owner uses, and generate or propose a project-specific skill when repeated workflows should trigger automatically.
 
@@ -28,7 +28,7 @@ The output files are internal engineering guides and automation runbooks, not co
 - Update existing onboarding assets when reusable project knowledge appears during later agent work.
 - Distill tacit knowledge into executable instructions, recipes, playbooks, and handoff criteria, not background explanation.
 - Preserve existing instruction files unless the user confirms replacement.
-- Establish the target project root before scanning. Treat that root as the scan boundary and do not scan the agent-onboard skill source directory, personal/global skill directories, Codex plugin caches, or `$CODEX_HOME` unless the user explicitly names one of them as the target project.
+- Establish the target project root before scanning. Treat that root as the scan boundary and do not scan the agent-runbook-distiller skill source directory, personal/global skill directories, Codex plugin caches, or `$CODEX_HOME` unless the user explicitly names one of them as the target project.
 - Do not run install, build, test, migration, deploy, or service-start commands unless the user confirms they are safe in the current environment.
 - Install bundled direct skills according to `bundled-skills.json`: proactively offer configured default project-local installs, install only platforms the owner explicitly uses or the repository evidence detects, and get user approval before copying files into the target project.
 - Install bundled packages according to `bundled-packages.json`: proactively offer configured default project-local installs, but get user approval before running installers that modify the target project.
@@ -40,6 +40,7 @@ The output files are internal engineering guides and automation runbooks, not co
 Read only the reference file needed for the current phase:
 
 - For interview categories, source labels, tooling inventory, bundled direct skills, bundled packages, platform skills, version pins, and automation breakpoint capture, read `references/knowledge-distillation.md`.
+- For uncommon, private, vendor, or internally named frameworks, or when the user mentions a framework the model may not know well, read `references/framework-fingerprints.md`.
 - For `AGENTS.md`, `agents.d/`, `CLAUDE.md`, project-specific skill structures, resource directories, bundled direct skills, bundled packages, platform skills, and default project-local installation, read `references/output-assets.md` before generating files.
 - When the user adds knowledge after initial onboarding or asks to update existing instructions, read `references/update-existing-assets.md`.
 - Before claiming the project is agent-ready or automation-ready, read `references/fresh-agent-dry-run.md`.
@@ -58,7 +59,7 @@ Determine the target project root before scanning:
 
 - If the user provides a project path, use that path as the target root.
 - If the current working directory is the project to onboard, use the current working directory as the target root.
-- If the current working directory is this `agent-onboard` skill, another skill source directory, `$CODEX_HOME`, or a Codex plugin/cache directory, do not scan it as the target project. Ask for the target project path.
+- If the current working directory is this `agent-runbook-distiller` skill, another skill source directory, `$CODEX_HOME`, or a Codex plugin/cache directory, do not scan it as the target project. Ask for the target project path.
 - Keep all repository scans, instruction-file checks, and evidence reads inside the target root unless the user explicitly asks to inspect an external dependency, installed skill, or package source.
 
 Ask early which workflows should become agent-runnable, which parts usually require a familiar human, which skills/scripts/tools agents should use, whether any bundled packages or platform skills should be created or installed, which agent platforms matter, and whether to generate a reusable project skill now or only propose its shape.
@@ -93,6 +94,15 @@ Read existing files from this evidence set when present:
 - Linter, formatter, type-checker, and test configuration.
 
 Use the project description and knowledge-holder role from Step 0 to decide which files need deeper reading.
+
+Run a framework fingerprint pass before presenting the scan summary:
+
+- Identify framework candidates from dependency names, build plugins, package managers, manifest files, generated directories, source file extensions, decorators, annotations, route/config files, and CLI wrappers.
+- Search for owner-mentioned or vendor/private framework names case-insensitively, including aliases and translated names when provided.
+- Keep the target root boundary: do not inspect installed SDKs, personal/global skill directories, plugin caches, or external framework sources unless the user explicitly asks.
+- If a framework candidate is not well-known from repository evidence, classify it as `Inferred` or `Unknown` and ask targeted owner questions instead of mapping it onto a familiar framework.
+- If repository files show framework-specific generators, build tools, DSLs, manifests, or lifecycle hooks, capture them as tooling, architecture, change recipes, and debug breakpoints.
+- When a private framework such as Nuwa is mentioned, read `references/framework-fingerprints.md` and use its scan checklist before interviewing the owner.
 
 ### 3. Present A Scan Summary
 

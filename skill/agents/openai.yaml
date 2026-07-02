@@ -1,4 +1,4 @@
 interface:
-  display_name: "Agent Onboard"
-  short_description: "Distill project knowledge, runbooks, agents.d, and bundled packages."
-  default_prompt: "Use $agent-onboard to interview me as the knowledgeable developer, scan this project, distill or update setup/build/test/debug/tooling knowledge, generate AGENTS.md plus agents.d, and propose a project skill with scripts, references, assets, version-pinned bundled packages, platform skills, or project-local bundled package installation when useful."
+  display_name: "Agent Runbook Distiller"
+  short_description: "Distill project knowledge, framework conventions, and agent runbooks."
+  default_prompt: "Use $agent-runbook-distiller to interview me as the knowledgeable developer, scan this project including private framework conventions, distill or update setup/build/test/debug/tooling knowledge into AGENTS.md plus agents.d runbooks, and propose project skills or bundled packages when useful."

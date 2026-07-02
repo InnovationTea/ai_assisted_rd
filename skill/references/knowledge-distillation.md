@@ -35,6 +35,7 @@ Cover these categories unless the project scope makes one irrelevant:
 - **Golden path**: The shortest reliable path from fresh checkout to a useful development loop.
 - **Bootstrap blockers**: Local tools, versions, credentials, services, data, network access, generated files, and machine-specific assumptions.
 - **Tooling inventory**: Approved skills, bundled packages, platform skills, scripts, CLIs, code generators, validators, and internal tools agents should use instead of improvising.
+- **Framework inventory**: Common, private, vendor, or internally named frameworks; framework-owned files; generated-code boundaries; manifests; lifecycle hooks; required SDKs; and framework-specific commands.
 - **Architecture map**: Module boundaries, key entry points, data flow, ownership boundaries, and where not to make cross-cutting changes.
 - **Change recipes**: Where to edit for common tasks, which files must change together, and which checks prove the change worked.
 - **Debug playbooks**: Common symptoms, logs to inspect, diagnostic commands, likely causes, and recovery steps.
@@ -195,6 +196,7 @@ Prioritize:
 - Whether tests and CI are trusted.
 - High-risk modules, data flows, generated files, and migration rules.
 - Directories agents should avoid or treat carefully.
+- Frameworks the project depends on, especially private/vendor frameworks; what each framework owns; which files are generated; which commands and tools are safe; and which framework conventions are easy for agents to miss.
 - Coding conventions not encoded in tooling.
 - What "done" and "ready for human review" mean.
 - Common change recipes a new agent should be able to execute.
