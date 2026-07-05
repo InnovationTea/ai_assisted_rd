@@ -27,7 +27,7 @@ This repository contains the source and release tooling for the `agent-runbook-d
 `-- README.md
 ```
 
-The release package is built from `skill/` only. Root-level files such as this README, `Makefile`, and `tools/` are maintainer assets and are not copied into the published skill artifact.
+The release package is built from `skill/` only. Root-level files such as this README, `Makefile`, and `tools/` are maintainer assets and are not copied into the published skill artifact. The `skill/` directory name is intentionally generic: it is the release package source root, so its contents become the top level of the published `agent-runbook-distiller` skill.
 
 ## What The Skill Produces
 
@@ -44,6 +44,13 @@ The release package is built from `skill/` only. Root-level files such as this R
 - Node.js with the built-in `node:test` runner.
 - GNU Make for the convenience targets.
 - Windows PowerShell available as `powershell`, used by the release script to create the zip archive with .NET compression APIs.
+
+On Windows, install Make with Chocolatey if it is not already available. Run PowerShell as Administrator, install Chocolatey, then install Make:
+
+```powershell
+Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+choco install make
+```
 
 ## Common Commands
 

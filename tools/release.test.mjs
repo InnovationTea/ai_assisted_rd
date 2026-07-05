@@ -118,10 +118,11 @@ test("knowledge asset write mode is persistent and documented across write workf
 test("external plugin prose stays configuration driven", async () => {
   const rootDir = process.cwd();
   const configPath = path.join(rootDir, "skill", "recommended-external-plugins.json");
+  const skillPath = path.join(rootDir, "skill", "SKILL.md");
   const config = JSON.parse(await readFile(configPath, "utf8"));
   const pluginTerms = config.recommended_external_plugins.flatMap((plugin) => [plugin.name, plugin.display_name]);
   const files = [path.join(rootDir, "README.md"), ...(await markdownFiles(path.join(rootDir, "skill")))]
-    .filter((filePath) => path.normalize(filePath) !== path.normalize(configPath));
+    .filter((filePath) => ![configPath, skillPath].map((allowedPath) => path.normalize(allowedPath)).includes(path.normalize(filePath)));
 
   for (const filePath of files) {
     const content = await readFile(filePath, "utf8");
@@ -133,6 +134,26 @@ test("external plugin prose stays configuration driven", async () => {
       );
     }
   }
+});
+
+test("core skill instructions define Superpowers SDD as an ask-first external workflow", async () => {
+  const skillPath = path.join(process.cwd(), "skill", "SKILL.md");
+  const skill = await readFile(skillPath, "utf8");
+
+  assert.match(skill, /Superpowers/i);
+  assert.match(skill, /recommended-external-plugins\.json/);
+  assert.match(skill, /not visible/i);
+  assert.match(skill, /recommend installing/i);
+  assert.match(skill, /approval/i);
+  assert.match(skill, /superpowers:brainstorming/);
+  assert.match(skill, /superpowers:writing-plans/);
+  assert.match(skill, /superpowers:subagent-driven-development/);
+  assert.match(skill, /superpowers:executing-plans/);
+  assert.match(skill, /superpowers:test-driven-development/);
+  assert.match(skill, /superpowers:systematic-debugging/);
+  assert.match(skill, /superpowers:verification-before-completion/);
+  assert.match(skill, /superpowers:requesting-code-review/);
+  assert.match(skill, /superpowers:receiving-code-review/);
 });
 
 test("framework knowledge config registers valid built-in knowledge packs", async () => {

@@ -23,6 +23,8 @@ Supported modes are `ask-each-change`, `agent-approve`, and `full-access`. The c
 
 Treat external agent workflow suites listed in `recommended-external-plugins.json` as recommended platform plugins, not bundled packages, unless the user explicitly asks to vendor them. If a configured plugin applies to the owner's platform and is not visible in the current agent environment or project platform config, recommend installing it through the platform's normal network-backed plugin flow instead of copying its internals into the project.
 
+When Superpowers is visible in the current agent environment, use it as the default SDD workflow suite for agent-runnable development loops. Require `superpowers:brainstorming` for feature or behavior design, `superpowers:writing-plans` for implementation planning, `superpowers:subagent-driven-development` or `superpowers:executing-plans` for plan execution, `superpowers:test-driven-development` for feature and bugfix implementation, `superpowers:systematic-debugging` for bugs or unexpected behavior, `superpowers:verification-before-completion` before completion claims, and `superpowers:requesting-code-review` or `superpowers:receiving-code-review` around review handoffs. If Superpowers is not visible but applies to the owner's platform, recommend installing it from `recommended-external-plugins.json` and proceed only with owner approval. If the owner declines or the platform cannot load it, document the same SDD stages as expected workflow guidance without claiming the skills are available.
+
 The output files are internal engineering guides and automation runbooks, not consulting reports.
 
 ## Core Rules
