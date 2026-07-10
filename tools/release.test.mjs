@@ -406,8 +406,38 @@ test("gitpush verifies required remotes before creating a commit", async () => {
   const skill = await readFile(path.join(rootDir, "skill", "bundled-skills", "gitpush", "skill", "SKILL.md"), "utf8");
 
   assert.match(skill, /fork/i);
-  assert.ok(skill.indexOf("git remote get-url origin") < skill.indexOf('git commit -m "提交信息"'));
-  assert.ok(skill.indexOf("git remote get-url upstream") < skill.indexOf('git commit -m "提交信息"'));
+  assert.ok(skill.indexOf("git remote get-url origin") < skill.indexOf('git commit -S -m "提交信息"'));
+  assert.ok(skill.indexOf("git remote get-url upstream") < skill.indexOf('git commit -S -m "提交信息"'));
+});
+
+test("gitpush creates signed commits and helps users enable signing when -S fails", async () => {
+  const rootDir = process.cwd();
+  const skill = await readFile(path.join(rootDir, "skill", "bundled-skills", "gitpush", "skill", "SKILL.md"), "utf8");
+
+  assert.match(skill, /git commit -S -m "提交信息"/);
+  assert.doesNotMatch(skill, /git commit -m "提交信息"/);
+  assert.match(skill, /Do not retry without `-S`/);
+  assert.match(skill, /do not fall back to an unsigned commit/i);
+  assert.match(skill, /git config --global commit\.gpgsign true/);
+  assert.match(skill, /git config --global gpg\.format ssh/);
+  assert.match(skill, /git config --global user\.signingkey/);
+});
+
+test("gitpush auto-configures SSH signing when a usable ~/.ssh key exists", async () => {
+  const rootDir = process.cwd();
+  const skill = await readFile(path.join(rootDir, "skill", "bundled-skills", "gitpush", "skill", "SKILL.md"), "utf8");
+
+  assert.match(skill, /Bootstrap commit signing before committing/);
+  assert.match(skill, /git config --get commit\.gpgsign/);
+  assert.match(skill, /git config --get gpg\.format/);
+  assert.match(skill, /git config --get user\.signingkey/);
+  assert.match(skill, /~\/\.ssh\/id_ed25519\.pub/);
+  assert.match(skill, /~\/\.ssh\/id_ecdsa\.pub/);
+  assert.match(skill, /~\/\.ssh\/id_rsa\.pub/);
+  assert.match(skill, /same basename private key/);
+  assert.match(skill, /git config --global gpg\.format ssh/);
+  assert.match(skill, /git config --global user\.signingkey SSH_PUBLIC_KEY_PATH/);
+  assert.match(skill, /GitHub Settings > SSH and GPG keys/);
 });
 
 test("gittag runs gitsync before local tag creation and pushes tags to both remotes", async () => {

@@ -73,13 +73,55 @@ chore: 描述
 
 Use `chore: 更新代码` only when the type cannot be inferred.
 
-11. Commit:
+11. Bootstrap commit signing before committing:
 
 ```bash
-git commit -m "提交信息"
+git config --get commit.gpgsign
+git config --get gpg.format
+git config --get user.signingkey
 ```
 
-12. Push to the user's writable fork remote, `origin`:
+If signing is already configured, keep the user's existing configuration. If signing is not configured, inspect SSH public keys in this order:
+
+```text
+~/.ssh/id_ed25519.pub
+~/.ssh/id_ecdsa.pub
+~/.ssh/id_rsa.pub
+~/.ssh/*.pub
+```
+
+Only auto-configure SSH signing when the selected `.pub` file has a same basename private key next to it, such as `~/.ssh/id_ed25519` for `~/.ssh/id_ed25519.pub`. Prefer the first usable key from the ordered list. If only one usable SSH key exists, configure SSH signing automatically:
+
+```bash
+git config --global gpg.format ssh
+git config --global user.signingkey SSH_PUBLIC_KEY_PATH
+git config --global commit.gpgsign true
+```
+
+After auto-configuration, tell the user that GitHub verification also requires adding the same public key as a signing key in GitHub Settings > SSH and GPG keys. If multiple usable SSH keys exist and none is clearly preferred by the ordered list, ask the user which key to use. If no usable SSH key exists, continue to the signed commit attempt and use the failure guidance below if it fails.
+
+12. Commit with a GitHub-verifiable signature:
+
+```bash
+git commit -S -m "提交信息"
+```
+
+Use the user's existing Git signing configuration. The `-S` flag must produce a GPG, SSH, or S/MIME signature that GitHub can verify. If this fails because signing is not configured, help the user enable commit signing before retrying:
+
+```bash
+# GPG signing
+git config --global user.signingkey KEY_ID
+git config --global commit.gpgsign true
+
+# SSH signing
+git config --global gpg.format ssh
+git config --global user.signingkey PATH_TO_PUBLIC_SSH_KEY
+git config --global commit.gpgsign true
+```
+
+Do not retry without `-S`, and do not fall back to an unsigned commit.
+
+13. Push to the user's writable fork remote, `origin`:
 
 ```bash
 git push origin CURRENT_BRANCH
@@ -184,8 +226,9 @@ After this, return to the main workflow at staged-change inspection. The final c
 
 ## Failure Rules
 
-- Stop on any failed precheck, failed fetch, missing required remote (`origin` or `upstream`), missing target branch, detached `HEAD`, protected branch squash, failed commit, or rejected push.
+- Stop on any failed precheck, failed fetch, missing required remote (`origin` or `upstream`), missing target branch, detached `HEAD`, protected branch squash, failed signed commit, or rejected push.
 - Preserve the relevant Git output in the final error.
+- If `git commit -S` fails because signing is unavailable or misconfigured, include the signing setup commands from the commit step in the failure guidance.
 - If `--force-with-lease` rejects the push, do not retry with `--force`.
 
 ## Output
