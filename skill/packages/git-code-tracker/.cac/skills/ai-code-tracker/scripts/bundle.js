@@ -1479,7 +1479,7 @@ async function runAiCodeUpdate(args = process.argv.slice(2)) {
   try {
     const result = await downloadAndUpgrade(repoRoot, updateInfo);
     console.log(`[ai-code-tracker] \u5347\u7EA7\u5B8C\u6210: ${result.version}`);
-    console.log("[ai-code-tracker] \u8BF7\u91CD\u542F\u5F53\u524D opencode \u4F1A\u8BDD\u4F7F\u5347\u7EA7\u751F\u6548");
+    console.log("[ai-code-tracker] Please restart the current codeagent-cli session for the upgrade to take effect");
   } catch (error) {
     console.error(`[ai-code-tracker] \u5347\u7EA7\u5931\u8D25: ${error.message}`);
     process.exitCode = 1;
@@ -1691,7 +1691,7 @@ async function installIntoRepo(repoRoot, hookScripts = hookScriptsForRepo(repoRo
     await deployCommands(repoRoot, "claude");
     await deployCommands(repoRoot, "codeagent-cli");
   }
-  await ensureAgentsRule(repoRoot);
+  await ensureAgentsRule(repoRoot, tool);
 }
 async function uninstallFromRepo(repoRoot, hookScripts = hookScriptsForRepo(repoRoot)) {
   await ensureWritableRepo(repoRoot);
@@ -1826,7 +1826,14 @@ async function detectActiveTool() {
       pid = stat.parentPid;
     }
   }
-  return "unknown";
+  return detectToolFromSkillDir() ?? "unknown";
+}
+function detectToolFromSkillDir() {
+  const scriptDir = moduleDirFromFileUrl(import.meta.url).replace(/\\/g, "/");
+  if (scriptDir.includes("/.claude/skills/ai-code-tracker/scripts")) return "claude";
+  if (scriptDir.includes("/.cac/skills/ai-code-tracker/scripts")) return "codeagent-cli";
+  if (scriptDir.includes("/.opencode/skills/ai-code-tracker/scripts")) return "opencode";
+  return null;
 }
 async function readWindowsProcessTree2() {
   const script = `
@@ -1884,25 +1891,51 @@ async function updateGitignore(repoRoot) {
   await fs8.writeFile(gitignore, `${content}${prefix}${additions.join("\n")}
 `, "utf8");
 }
-async function ensureAgentsRule(repoRoot, tool) {
+function agentsRuleInfo(tool = "opencode") {
+  if (tool === "claude") {
+    return {
+      skillLabel: "Claude Code",
+      restartText: "restart the current Claude Code session because project hooks are loaded at Claude Code startup."
+    };
+  }
+  if (tool === "codeagent-cli") {
+    return {
+      skillLabel: "codeagent-cli",
+      restartText: "restart the current codeagent-cli session because project hooks are loaded at codeagent-cli startup."
+    };
+  }
+  return {
+    skillLabel: "opencode",
+    restartText: "restart the current opencode session because project plugins are loaded at opencode startup."
+  };
+}
+function replaceAgentsRuleSection(content, rule) {
+  const heading = "## AI Code Tracker";
+  const start = content.indexOf(heading);
+  if (start === -1) return null;
+  const restStart = start + heading.length;
+  const nextHeading = content.slice(restStart).search(/\n## /);
+  const end = nextHeading === -1 ? content.length : restStart + nextHeading;
+  const prefix = content.slice(0, start).trimEnd();
+  const suffix = content.slice(end).trimStart();
+  return `${prefix}${prefix ? "\n\n" : ""}${rule.trimEnd()}${suffix ? `\n\n${suffix}` : "\n"}`;
+}
+async function ensureAgentsRule(repoRoot, tool = "opencode") {
+  const info = agentsRuleInfo(tool);
   const agents = path7.join(repoRoot, "AGENTS.md");
   const rule = `## AI Code Tracker
 
-Before modifying code in this repository, load the opencode skill \`ai-code-tracker\` and run its preflight check. If tracking is not installed or is broken, ask the user whether to install or repair it. If the user confirms, run the project-level install or repair script automatically, rerun preflight, and continue with code changes only after preflight passes.
+Before modifying code in this repository, load the ${info.skillLabel} skill \`ai-code-tracker\` and run its preflight check. If tracking is not installed or is broken, ask the user whether to install or repair it. If the user confirms, run the project-level install or repair script automatically, rerun preflight, and continue with code changes only after preflight passes.
 
-After installing or repairing ai-code-tracker, tell the user to restart the current opencode session because project plugins are loaded at opencode startup.
+After installing or repairing ai-code-tracker, tell the user to ${info.restartText}
 
 When cherry-picking commits, always use \`git cherry-pick -x\` to preserve the source commit reference. This allows ai-code-tracker to copy the original AI line statistics into the cherry-picked commit's tracking record.
 `;
   let content = "";
   if (await exists(agents)) content = await fs8.readFile(agents, "utf8");
   if (content.includes("## AI Code Tracker")) {
-    if (!content.includes("cherry-pick -x")) {
-      await fs8.writeFile(agents, `${content.trimEnd()}
-
-When cherry-picking commits, always use \`git cherry-pick -x\` to preserve the source commit reference. This allows ai-code-tracker to copy the original AI line statistics into the cherry-picked commit's tracking record.
-`, "utf8");
-    }
+    if (content.includes(`load the ${info.skillLabel} skill \`ai-code-tracker\``) && content.includes("cherry-pick -x")) return;
+    await fs8.writeFile(agents, replaceAgentsRuleSection(content, rule), "utf8");
     return;
   }
   const prefix = content && !content.endsWith("\n") ? "\n\n" : "";

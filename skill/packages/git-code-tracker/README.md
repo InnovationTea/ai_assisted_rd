@@ -78,10 +78,12 @@ sequenceDiagram
 ### 一键安装（同时支持 Claude Code 和 opencode）
 
 ```bash
-node install-to-project.js /path/to/your/project
+node install-to-project.js /path/to/your/project --platform claude
+node install-to-project.js /path/to/your/project --platform opencode
+node install-to-project.js /path/to/your/project --platform codeagent-cli
 ```
 
-会将插件复制到目标项目的 `.opencode/skills/` 和 `.claude/skills/`，并自动运行安装脚本。
+Pass the detected or requested platform so the installer only copies and configures that agent integration. Use `--platform all` only when the project should support Claude Code, opencode, and codeagent-cli together.
 
 ### 手动安装
 
@@ -139,13 +141,16 @@ node .claude/skills/ai-code-tracker/scripts/install.js --check
 
 # opencode 用户
 node .opencode/skills/ai-code-tracker/scripts/install.js --check
+
+# codeagent-cli 用户
+node .cac/skills/ai-code-tracker/scripts/install.js --check
 ```
 
 ### 注意事项
 
 - **Node.js 版本**：需要 Node.js 20.9+（使用 `--experimental-vm-modules` 启动 ES 模块）
 - **commit message 中不要手动加 `[ai-tracking]`**：追踪器会在 post-commit 时自动追加此后缀。手动添加会导致 post-commit hook 跳过该提交，CSV 中不会记录。
-- `.claude/` 和 `.opencode/` 互相独立，可以只安装其中一个，也可以同时安装。
+- `.claude/`、`.opencode/` 和 `.cac/` 互相独立，默认只安装检测到或指定的平台；需要全部安装时显式使用 `--platform all`。
 
 ## 配置
 
